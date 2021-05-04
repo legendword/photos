@@ -1,4 +1,4 @@
-# Legendword Photos (photos)
+# Legendword Photos (gallery)
 
 Personal photo collection.
 
