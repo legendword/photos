@@ -1,1 +1,13 @@
 // app global css in SCSS form
+
+@mixin featured-images {
+    $featured-image-list: ("section1": "https://legendword.com/gallery/images/2020/fall/sm/DSC_0644.jpg", "section2": "https://legendword.com/gallery/images/2020/winter/sm/DSC_0892.jpg", "winter2020": "https://legendword.com/gallery/images/2020/winter/sm/DSC_1301.jpg", "fall2020": "https://legendword.com/gallery/images/2020/fall/sm/DSC_0798.jpg");
+    @each $name, $link in $featured-image-list {
+        .bg-#{$name} {
+            background-image: url($link);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+    }
+}

@@ -73,7 +73,6 @@ export default {
     name: 'Index',
     data() {
         return {
-            scrollListener: null,
             loadingDynamicText: 'Loading',
             loadingDynamicCounter: 0,
             currentSection: 'section1',
@@ -95,7 +94,7 @@ export default {
                 this.imageCache[i.id].loaded = true
                 if (this.loading == true) {
                     this.loading = false
-                    this.$refs.background.classList.add(sections[0].id)
+                    this.$refs.background.classList.add('bg-'+sections[0].id)
                     this.loadingFinished()
                 }
                 
@@ -113,9 +112,8 @@ export default {
         this.init()
     },
     beforeDestroy() {
-        if (this.scrollListener !== null) {
-            window.removeEventListener('scroll', this.scrollListener)
-        }
+        console.log('beforeDestroy')
+        window.removeEventListener('scroll', this.scrollListener)
     },
     methods: {
         showScrollText() {
@@ -146,30 +144,31 @@ export default {
                 }
             }, 2000)
         },
+        scrollListener(ev) {
+            if (this.loading) { //prevent scrolling on loading
+                ev.preventDefault()
+                return
+            }
+            if (this.$refs.scrollText.classList.contains('show')) {
+                this.$refs.scrollText.classList.remove('show')
+            }
+            let pos = scroll.getScrollPosition(window)
+            let curSec = sections[0].id
+            for (let i of sections) {
+                if (pos >= this.$refs[i.id].offsetTop - this.windowHeight/3) curSec = i.id;
+                else break;
+            }
+            if (curSec != this.currentSection) {
+                this.$refs.background.classList.remove('bg-'+this.currentSection)
+                //if (this.imageCache[curSec].loaded) {
+                    this.$refs.background.classList.add('bg-'+curSec)
+                //}
+                this.currentSection = curSec
+            }
+        },
         init() {
             //scrollListener for changing background image
-            this.scrollListener = window.addEventListener('scroll', (ev) => {
-                if (this.loading) { //prevent scrolling on loading
-                    ev.preventDefault()
-                    return
-                }
-                if (this.$refs.scrollText.classList.contains('show')) {
-                    this.$refs.scrollText.classList.remove('show')
-                }
-                let pos = scroll.getScrollPosition(window)
-                let curSec = sections[0].id
-                for (let i of sections) {
-                    if (pos >= this.$refs[i.id].offsetTop - this.windowHeight/3) curSec = i.id;
-                    else break;
-                }
-                if (curSec != this.currentSection) {
-                    this.$refs.background.classList.remove(this.currentSection)
-                    //if (this.imageCache[curSec].loaded) {
-                        this.$refs.background.classList.add(curSec)
-                    //}
-                    this.currentSection = curSec
-                }
-            })
+            window.addEventListener('scroll', this.scrollListener)
 
             //start loading dynamic text timer
             setTimeout(this.loadingDynamic, 500)
@@ -179,11 +178,15 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../css/app.scss';
+@include featured-images;
+
 .page-loading {
     overflow: hidden;
     height: 100vh;
     width: 100vw;
 }
+
 .index-background {
     height: 100vh;
     width: 100vw;
@@ -199,19 +202,6 @@ export default {
     /* filter: blur(2px); */
     z-index: -1 !important;
     background-color: #295a1da3;
-    
-    &.section1 {
-        background-image: url('https://legendword.com/gallery/images/2020/fall/sm/DSC_0644.jpg');
-    }
-    &.section2 {
-        background-image: url('https://legendword.com/gallery/images/2020/winter/sm/DSC_0892.jpg');
-    }
-    &.winter2020 {
-        background-image: url('https://legendword.com/gallery/images/2020/winter/sm/DSC_1301.jpg');
-    }
-    &.fall2020 {
-        background-image: url('https://legendword.com/gallery/images/2020/fall/sm/DSC_0798.jpg');
-    }
 }
 .index-section {
     height: 100vh;

@@ -46,6 +46,8 @@ module.exports = function (/* ctx */) {
     build: {
       vueRouterMode: 'history', // available values: 'hash', 'history'
 
+      publicPath: 'gallery',
+
       // transpile: false,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
@@ -95,7 +97,9 @@ module.exports = function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Notify'
+      ]
     },
 
     // animations: 'all', // --- includes all animations
