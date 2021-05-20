@@ -40,7 +40,21 @@
                     <div class="flex justify-between">
                         <div class="text-h5">{{selectedPhoto}}</div>
                         <div>
-                            <q-btn-dropdown color="primary" flat label="Download">
+                            <q-btn color="light-green-8" v-if="selectedData" flat label="Info" icon="info">
+                                <q-popup-proxy>
+                                    <q-list class="bg-white">
+                                        <q-item v-for="dt in imageDataRef" :key="dt.name">
+                                            <q-item-section>
+                                                <q-item-label>{{dt.label}}</q-item-label>
+                                            </q-item-section>
+                                            <q-item-section side>
+                                                <q-item-label>{{dt.format ? dt.format(selectedData[dt.name]) : selectedData[dt.name]}}</q-item-label>
+                                            </q-item-section>
+                                        </q-item>
+                                    </q-list>
+                                </q-popup-proxy>
+                            </q-btn>
+                            <q-btn-dropdown color="primary" flat label="Download" icon="file_download">
                                 <q-list class="text-right">
                                     <q-item clickable v-close-popup @click="downloadSelected('sm/')">
                                         <q-item-section>
@@ -87,6 +101,16 @@
 import photoIndex from '../photoIndex'
 import Photo from '../components/Photo'
 import downloadFile from '../downloadFile'
+const imageDataRef = [
+    { name: 'cameraModel', label: 'Camera Model' },
+    { name: 'lensModel', label: 'Lens Model' },
+    { name: 'dateCreated', label: 'Date', format: (v) => (new Date(v*1000)).toLocaleString() },
+    { name: 'iso', label: 'ISO' },
+    { name: 'fNumber', label: 'F Number', format: (v) => 'f/' + v },
+    { name: 'exposureTime', label: 'Exposure Time' },
+    { name: 'focalLength', label: 'Focal Length', format: (v) => v + 'mm' },
+//    { name: 'exposureCompensation', label: 'Exposure Compensation', format: (v) => v.toFixed(2) }
+]
 export default {
     name: 'Collection',
     components: {
@@ -100,7 +124,10 @@ export default {
             season: '',
             photoDialog: false,
             selectedPhoto: '',
-            selectedIndex: 0
+            selectedIndex: 0,
+            imageData: [],
+            selectedData: null,
+            imageDataRef: imageDataRef
         }
     },
     methods: {
@@ -131,7 +158,14 @@ export default {
             console.log('photoClick')
             this.selectedPhoto = img
             this.selectedIndex = ind
+            this.selectedData = this.imageData.find(v => v.fileName == img)
+            //console.log(this.selectedData)
             this.photoDialog = true
+        },
+        fetchImageData() {
+            this.$api.get('/imageData/'+this.season+this.year+'.json').then(res => {
+                this.imageData = res.data
+            })
         }
     },
     created() {
@@ -144,6 +178,8 @@ export default {
 
         this.year = params.year
         this.season = params.season
+
+        this.fetchImageData();
     },
     computed: {
         baseUrl() {
@@ -213,8 +249,10 @@ export default {
 .photoDialog-photo {
     display: block;
     aspect-ratio: 1.5031;
-    width: auto;
     margin: auto;
+    width: auto;
+    max-width: calc( min( 1200px, 85vw ) - 132px );
+    height: auto;
     max-height: calc( 100vh - 132px );
 }
 .index-background {

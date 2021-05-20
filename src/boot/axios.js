@@ -6,7 +6,7 @@ import axios from 'axios'
 Vue.prototype.$axios = axios
 
 const api = axios.create({
-    baseURL: 'https://legendword.com/gallery/images'
+    baseURL: 'https://legendword.com/gallery'
 })
 Vue.prototype.$api = api
 
