@@ -13,12 +13,31 @@
                         <q-icon name="arrow_downward" color="white" />
                     </div>
                 </div>
-                <section class="index-section" ref="section1">
+                <section class="index-section" id="section1">
                     <div class="text-h2 section-title text-white"><span style="font-weight: 400;">Legendword </span><span style="font-weight: 300;">Photos</span></div>
                 </section>
-                <section class="index-section" ref="section2">
+                <section class="index-section" id="section2">
                     <div class="text-h2 section-title text-white">Capture the beauty of nature.</div>
                 </section>
+                <section v-for="collection in photoIndex.collections" :key="collection.name" class="index-section" :id="collection.season + collection.year">
+                    <q-card class="section-card" @click="cardLink('/'+collection.year+'/'+collection.season)">
+                        <q-card-section>
+                            <div class="row">
+                                <div class="col-12 col-md">
+                                    <div class="text-h3">{{collection.name}}</div>
+                                    <div class="q-mt-md text-subtitle2">{{collection.desc}}</div>
+                                    <div class="q-mt-sm text-caption text-grey-7">{{collection.footnote}}</div>
+                                </div>
+                                <div class="col-12 col-md-auto">
+                                    <div class="view-collection">
+                                        <div class="text-subtitle2">View Collection &gt;</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </q-card-section>
+                    </q-card>
+                </section>
+                <!--
                 <section class="index-section" ref="winter2020">
                     <q-card class="section-card" @click="cardLink('/2020/winter')">
                         <q-card-section>
@@ -55,6 +74,7 @@
                         </q-card-section>
                     </q-card>
                 </section>
+                -->
                 <div class="index-background" ref="background"></div>
             </div>
         </transition-group>
@@ -62,10 +82,12 @@
 </template>
 
 <script>
+import photoIndex from '../photoIndex'
 import { scroll } from 'quasar'
 const sections = [
     { id: 'section1', img: 'https://legendword.com/gallery/images/2020/fall/sm/DSC_0644.jpg' },
     { id: 'section2', img: 'https://legendword.com/gallery/images/2020/winter/sm/DSC_0892.jpg' },
+    { id: 'spring2021', img: 'https://legendword.com/gallery/images/2021/spring/sm/DSC_1504.jpg' },
     { id: 'winter2020', img: 'https://legendword.com/gallery/images/2020/winter/sm/DSC_1301.jpg' },
     { id: 'fall2020', img: 'https://legendword.com/gallery/images/2020/fall/sm/DSC_0798.jpg' }
 ];
@@ -73,6 +95,7 @@ export default {
     name: 'Index',
     data() {
         return {
+            photoIndex,
             loadingDynamicText: 'Loading',
             loadingDynamicCounter: 0,
             currentSection: 'section1',
@@ -155,7 +178,7 @@ export default {
             let pos = scroll.getScrollPosition(window)
             let curSec = sections[0].id
             for (let i of sections) {
-                if (pos >= this.$refs[i.id].offsetTop - this.windowHeight/3) curSec = i.id;
+                if (pos >= document.getElementById(i.id).offsetTop - this.windowHeight/3) curSec = i.id;
                 else break;
             }
             if (curSec != this.currentSection) {
